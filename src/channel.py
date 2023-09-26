@@ -20,8 +20,43 @@ class Channel:
     def __init__(self, channel_id: str) -> None:
         """Экземпляр инициализируется id канала. Дальше все данные будут подтягиваться по API."""
         self.channel_id = channel_id
+        self.youtube = youtube.channels().list(id=self.channel_id, part='snippet,statistics').execute()
+        self.title = self.youtube["items"][0]["snippet"]["title"]
+        self.description = self.youtube["items"][0]["snippet"]["description"]
+        self.url = "https://www.youtube.com/channel/" + self.channel_id
+        self.subscribers_count = self.youtube["items"][0]["statistics"]["subscriberCount"]
+        self.video_count = self.youtube["items"][0]["statistics"]["videoCount"]
+        self.views_count = self.youtube["items"][0]["statistics"]["viewCount"]
 
     def print_info(self) -> None:
         """Выводит в консоль информацию о канале."""
-        channel = youtube.channels().list(id=self.channel_id, part='snippet,statistics').execute()
-        return print_json(channel)
+        return print_json(self.youtube)
+
+    @staticmethod
+    def get_service():
+        return youtube
+
+    def to_json(self, path):
+        directory = "../data"
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        path = os.path.join(directory, path)
+
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        else:
+            data = []
+
+        data.append({
+            "channel_id": self.channel_id,
+            "title": self.title,
+            "description": self.description,
+            "url": self.url,
+            "subscribers_count": self.subscribers_count,
+            "video_count": self.video_count,
+            "views_count": self.views_count,
+        })
+
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False)
