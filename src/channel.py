@@ -24,9 +24,33 @@ class Channel:
         self.title = self.youtube["items"][0]["snippet"]["title"]
         self.description = self.youtube["items"][0]["snippet"]["description"]
         self.url = "https://www.youtube.com/channel/" + self.channel_id
-        self.subscribers_count = self.youtube["items"][0]["statistics"]["subscriberCount"]
-        self.video_count = self.youtube["items"][0]["statistics"]["videoCount"]
-        self.views_count = self.youtube["items"][0]["statistics"]["viewCount"]
+        self.subscribers_count = int(self.youtube["items"][0]["statistics"]["subscriberCount"])
+        self.video_count = int(self.youtube["items"][0]["statistics"]["videoCount"])
+        self.views_count = int(self.youtube["items"][0]["statistics"]["viewCount"])
+
+    def __str__(self):
+        return f"{self.title} ({self.url})"
+
+    def __add__(self, other):
+        return self.views_count + other.views_count
+
+    def __sub__(self, other):
+        return self.views_count - other.views_count
+
+    def __lt__(self, other):
+        return self.views_count < other.views_count
+
+    def __le__(self, other):
+        return self.views_count <= other.views_count
+
+    def __gt__(self, other):
+        return self.views_count > other.views_count
+
+    def __ge__(self, other):
+        return self.views_count >= other.views_count
+
+    def __eq__(self, other):
+        return self.views_count == other.views_count
 
     def print_info(self) -> None:
         """Выводит в консоль информацию о канале."""
