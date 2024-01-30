@@ -11,13 +11,22 @@ youtube = build('youtube', 'v3', developerKey=api_key)
 class Video:
     def __init__(self, video_id: str) -> None:
         self.video_id = video_id
-        self.youtube = youtube.videos().list(part='snippet,statistics', id=self.video_id).execute()
-        self.title = self.youtube["items"][0]["snippet"]["title"]
-        self.link_to_video = f'https://www.youtube.com/watch?v={self.video_id}'
-        self.views_amount = int(self.youtube["items"][0]["statistics"]["viewCount"])
-        self.likes_amount = int(self.youtube["items"][0]["statistics"].get("likeCount", 0))
+        self.youtube = None
+        self.title = None
+        self.link_to_video = None
+        self.views_amount = None
+        self.likes_amount = None
 
-    def __str__(self):
+        try:
+            self.youtube = youtube.videos().list(part='snippet,statistics', id=self.video_id).execute()
+            self.title = self.youtube["items"][0]["snippet"]["title"]
+            self.link_to_video = f'https://www.youtube.com/watch?v={self.video_id}'
+            self.views_amount = int(self.youtube["items"][0]["statistics"]["viewCount"])
+            self.likes_amount = int(self.youtube["items"][0]["statistics"].get("likeCount", 0))
+        except IndexError:
+            print('Передан несуществующий id видео')
+
+    def __str__(self) -> str:
         return self.title
 
 
